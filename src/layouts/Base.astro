@@ -5,7 +5,7 @@ import Header from "@/components/layout/Header.astro";
 import LangProvider from "@/components/i18n/LangProvider.astro";
 import SkipLink from "@/components/SkipLink.astro";
 import ThemeProvider from "@/components/ThemeProvider.astro";
-import { defaultLang, localize } from "@/i18n";
+import { alternatePaths, defaultLang, localize } from "@/i18n";
 import { siteConfig } from "@/site.config";
 import type { SiteMeta } from "@/types";
 
@@ -14,8 +14,9 @@ interface Props {
 }
 
 const { meta } = Astro.props;
-// monolingual pages (/ and /en/) fix the UI language; posts and notes leave it to the reader
+// every page but the 404 has a fixed UI language (its URL prefix)
 const uiFixed = Astro.locals.uiLang !== undefined;
+const alternates = uiFixed ? (Astro.locals.alternates ?? alternatePaths(Astro.url.pathname)) : undefined;
 const lang = Astro.locals.uiLang ?? meta.lang ?? defaultLang;
 const title = meta.title;
 // tab title in each UI language, applied client side by LangProvider (search engines read the server-rendered one)
@@ -32,7 +33,7 @@ const titleEn = `${localize(title, "en")} • ${siteConfig.title}`;
 	data-title-en={titleEn}
 >
 	<head>
-		<BaseHead {...meta} lang={lang} alternates={uiFixed} />
+		<BaseHead {...meta} lang={lang} alternates={alternates} />
 		<LangProvider />
 		<ThemeProvider />
 	</head>

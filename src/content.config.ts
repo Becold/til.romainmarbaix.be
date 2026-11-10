@@ -13,6 +13,8 @@ const baseSchema = z.object({
 	title: titleSchema,
 	// Language the entry is written in. The UI language is chosen separately by the reader.
 	lang: z.enum(languages).default(defaultLang),
+	// Same value on the versions of one entry in each language, to link them (hreflang, FR/EN switch).
+	translationKey: z.string().optional(),
 });
 
 const post = defineCollection({

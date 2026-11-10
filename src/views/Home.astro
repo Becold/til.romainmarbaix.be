@@ -1,10 +1,10 @@
 ---
 import { type Lang, localizePath } from "@/i18n";
-import { type CollectionEntry, getCollection } from "astro:content";
+import type { CollectionEntry } from "astro:content";
 import PostPreview from "@/components/blog/PostPreview.astro";
 import T from "@/components/i18n/T.astro";
 import Note from "@/components/note/Note.astro";
-import { getAllPosts } from "@/data/post";
+import { getAllPosts, getNotes } from "@/data/post";
 import PageLayout from "@/layouts/Base.astro";
 import { collectionDateSort } from "@/utils/date";
 
@@ -18,7 +18,7 @@ Astro.locals.uiLang = lang;
 
 // Posts
 const MAX_POSTS = 10;
-const allPosts = await getAllPosts();
+const allPosts = await getAllPosts(lang);
 const allPostsByDate = allPosts.sort(collectionDateSort) as CollectionEntry<"post">[];
 const latestPosts = allPostsByDate.slice(0, MAX_POSTS);
 
@@ -32,7 +32,7 @@ const pinnedPosts = allPostsByDate
 
 // Notes, set to a max of 5
 const MAX_NOTES = 5;
-const allNotes = await getCollection("note");
+const allNotes = await getNotes(lang);
 const latestNotes = allNotes
 	.sort(collectionDateSort)
 	.slice(0, MAX_NOTES) as CollectionEntry<"note">[];

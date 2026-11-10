@@ -4,10 +4,9 @@ import { type CollectionEntry, render } from "astro:content";
 import type { Page } from "astro";
 import { Icon } from "astro-icon/components";
 import PostPreview from "@/components/blog/PostPreview.astro";
-import LangFilter from "@/components/i18n/LangFilter.astro";
 import T from "@/components/i18n/T.astro";
 import Pagination from "@/components/Paginator.astro";
-import { getTagMeta } from "@/data/post";
+import { getAllPosts, getTagMeta } from "@/data/post";
 import PageLayout from "@/layouts/Base.astro";
 
 interface Props {
@@ -19,6 +18,12 @@ const { lang, page } = Astro.props;
 // Monolingual page: <T>, dates and links render only in this language (see src/i18n.ts)
 Astro.locals.uiLang = lang;
 const tag = Astro.params.tag as string;
+// translated page only if the other language also has posts with this tag, on this page number
+const otherLang: Lang = lang === "fr" ? "en" : "fr";
+const otherCount = (await getAllPosts(otherLang)).filter((p) => p.data.tags.includes(tag)).length;
+if (otherCount <= (page.currentPage - 1) * page.size) {
+	Astro.locals.alternates = { [lang]: Astro.url.pathname };
+}
 const tagMeta = await getTagMeta(tag);
 
 const TagContent = tagMeta ? (await render(tagMeta)).Content : null;
@@ -60,7 +65,6 @@ const paginationProps = {
 		{tagMeta?.data.description && <p>{tagMeta.data.description}</p>}
 		{TagContent && <TagContent />}
 	</div>
-	<LangFilter />
 	<ul class="space-y-4">
 		{
 			page.data.map((p) => (

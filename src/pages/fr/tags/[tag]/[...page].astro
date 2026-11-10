@@ -2,7 +2,7 @@
 import TagPosts from "@/views/TagPosts.astro";
 import { tagPaths } from "@/views/paths";
 
-export const getStaticPaths = tagPaths;
+export const getStaticPaths = tagPaths("fr");
 
 // biome-ignore lint/suspicious/noExplicitAny: props come from the shared getStaticPaths
 const props = Astro.props as any;

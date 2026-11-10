@@ -1,7 +1,9 @@
 ---
 import { getCollection } from "astro:content";
 import type { GetStaticPaths, InferGetStaticPropsType } from "astro";
+import TranslationLink from "@/components/i18n/TranslationLink.astro";
 import Note from "@/components/note/Note.astro";
+import { getNoteTranslations } from "@/data/post";
 import PageLayout from "@/layouts/Base.astro";
 
 // notes written in this language only
@@ -16,6 +18,10 @@ export const getStaticPaths = (async () => {
 type Props = InferGetStaticPropsType<typeof getStaticPaths>;
 
 const { note } = Astro.props;
+// The whole page is in the language the note is written in; other versions linked through `translationKey`.
+Astro.locals.uiLang = note.data.lang;
+const translations = await getNoteTranslations(note);
+Astro.locals.alternates = translations;
 
 const meta = {
 	description: note.data.description || note.data.title,
@@ -26,4 +32,5 @@ const meta = {
 
 <PageLayout meta={meta}>
 	<Note as="h1" note={note} />
+	<TranslationLink lang={note.data.lang} translations={translations} />
 </PageLayout>

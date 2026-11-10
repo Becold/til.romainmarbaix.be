@@ -4,10 +4,9 @@ import type { CollectionEntry } from "astro:content";
 import type { Page } from "astro";
 import { Icon } from "astro-icon/components";
 import PostPreview from "@/components/blog/PostPreview.astro";
-import LangFilter from "@/components/i18n/LangFilter.astro";
 import T from "@/components/i18n/T.astro";
 import Pagination from "@/components/Paginator.astro";
-import { groupPostsByYear } from "@/data/post";
+import { getAllPosts, groupPostsByYear } from "@/data/post";
 import PageLayout from "@/layouts/Base.astro";
 
 interface Props {
@@ -20,6 +19,13 @@ interface Props {
 const { lang, page, uniqueTags, pinnedPosts } = Astro.props;
 // Monolingual page: <T>, dates and links render only in this language (see src/i18n.ts)
 Astro.locals.uiLang = lang;
+// page 2+ is translated only if the other language has that many posts
+if (page.currentPage > 1) {
+	const otherCount = (await getAllPosts(lang === "fr" ? "en" : "fr")).length;
+	if (otherCount <= (page.currentPage - 1) * page.size) {
+		Astro.locals.alternates = { [lang]: Astro.url.pathname };
+	}
+}
 
 const meta = {
 	lang,
@@ -49,12 +55,11 @@ const descYearKeys = Object.keys(groupedByYear).sort((a, b) => +b - +a);
 <PageLayout meta={meta}>
 	<div class="mb-12 flex items-center gap-3">
 		<h1 class="title">TIL</h1>
-		<a class="text-accent" href="/rss.xml" target="_blank">
+		<a class="text-accent" href={localizePath("/rss.xml", lang)} target="_blank">
 			<span class="sr-only"><T fr="Flux RSS" en="RSS feed" /></span>
 			<Icon aria-hidden="true" class="h-6 w-6" focusable="false" name="mdi:rss" />
 		</a>
 	</div>
-	<LangFilter />
 	<div class="grid sm:grid-cols-[3fr_1fr] sm:gap-x-8 sm:gap-y-16">
 		<div>
 			{

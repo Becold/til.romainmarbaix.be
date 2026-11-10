@@ -1,5 +1,6 @@
 ---
-import type { Lang } from "@/i18n";
+import { getNotes } from "@/data/post";
+import { type Lang, localizePath } from "@/i18n";
 import T from "@/components/i18n/T.astro";
 import type { CollectionEntry } from "astro:content";
 import type { Page } from "astro";
@@ -16,6 +17,13 @@ interface Props {
 const { lang, page } = Astro.props;
 // Monolingual page: <T>, dates and links render only in this language (see src/i18n.ts)
 Astro.locals.uiLang = lang;
+// page 2+ is translated only if the other language has that many notes
+if (page.currentPage > 1) {
+	const otherCount = (await getNotes(lang === "fr" ? "en" : "fr")).length;
+	if (otherCount <= (page.currentPage - 1) * page.size) {
+		Astro.locals.alternates = { [lang]: Astro.url.pathname };
+	}
+}
 
 const meta = {
 	lang,
@@ -42,7 +50,7 @@ const paginationProps = {
 <PageLayout meta={meta}>
 	<section>
 		<h1 class="title mb-12 flex items-center gap-3">
-			Notes <a class="text-accent" href="/notes/rss.xml" target="_blank">
+			Notes <a class="text-accent" href={localizePath("/notes/rss.xml", lang)} target="_blank">
 				<span class="sr-only"><T fr="Flux RSS" en="RSS feed" /></span>
 				<Icon aria-hidden="true" class="h-6 w-6" focusable="false" name="mdi:rss" />
 			</a>

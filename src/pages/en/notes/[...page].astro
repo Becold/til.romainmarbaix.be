@@ -2,7 +2,7 @@
 import NotesList from "@/views/NotesList.astro";
 import { notesPaths } from "@/views/paths";
 
-export const getStaticPaths = notesPaths;
+export const getStaticPaths = notesPaths("en");
 
 // biome-ignore lint/suspicious/noExplicitAny: props come from the shared getStaticPaths
 const props = Astro.props as any;

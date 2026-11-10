@@ -1,0 +1,43 @@
+---
+/**
+ * "Also available in ..." link, shown only when the post or note has a version in another language.
+ * Written in the target language, for readers of that language.
+ */
+import type { Translations } from "@/data/post";
+import { type Lang, languages } from "@/i18n";
+
+interface Props {
+	lang: Lang;
+	translations: Translations;
+}
+
+const { lang, translations } = Astro.props;
+
+const labels: Record<Lang, string> = {
+	fr: "Cet article existe aussi en français",
+	en: "This post is also available in English",
+};
+
+const others = languages.filter((l) => l !== lang && translations[l]);
+---
+
+{
+	others.map((l) => (
+		<p class="text-muted mt-4 text-sm">
+			<a class="cactus-link" href={translations[l]} hreflang={l} lang={l} data-set-lang={l}>
+				{labels[l]} →
+			</a>
+		</p>
+	))
+}
+
+<script>
+	// remember the language picked through this link, like the FR/EN switch
+	for (const link of document.querySelectorAll<HTMLAnchorElement>("a[data-set-lang]")) {
+		link.addEventListener("click", () => {
+			try {
+				if (link.dataset.setLang) localStorage.setItem("ui-lang", link.dataset.setLang);
+			} catch {}
+		});
+	}
+</script>

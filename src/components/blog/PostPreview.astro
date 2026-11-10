@@ -14,12 +14,9 @@ const { as: Tag = "div", post, withDesc = false } = Astro.props;
 ---
 
 <FormattedDate class="text-muted min-w-30 font-semibold" date={post.data.publishDate} />
-<Tag data-post-lang={post.data.lang}>
+<Tag>
 	{post.data.draft && <span class="text-red-500">(<T fr="Brouillon" en="Draft" />) </span>}
-	<span class="text-muted me-1 text-xs font-semibold" title={post.data.lang === "fr" ? "Français" : "English"}
-		>[{post.data.lang}]</span
-	>
-	<a class="cactus-link" href={postUrl(post)} lang={post.data.lang}>
+	<a class="cactus-link" href={postUrl(post)}>
 		{post.data.title}
 	</a>
 </Tag>

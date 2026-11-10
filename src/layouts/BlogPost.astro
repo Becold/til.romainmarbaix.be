@@ -4,6 +4,8 @@ import { type CollectionEntry, render } from "astro:content";
 import Masthead from "@/components/blog/Masthead.astro";
 import T from "@/components/i18n/T.astro";
 import TOC from "@/components/blog/TOC.astro";
+import TranslationLink from "@/components/i18n/TranslationLink.astro";
+import { getPostTranslations } from "@/data/post";
 import WebMentions from "@/components/blog/webmentions/index.astro";
 
 import BaseLayout from "./Base.astro";
@@ -17,6 +19,11 @@ const { ogImage, title, description, updatedDate, publishDate, lang, tags } = po
 const socialImage = ogImage ?? `/og-image/${post.id}.png`;
 const { headings, remarkPluginFrontmatter } = await render(post);
 const readingMinutes: number = remarkPluginFrontmatter.readingMinutes;
+// The whole page is in the language the post is written in.
+Astro.locals.uiLang = lang;
+// Other language versions, linked through `translationKey` (hreflang, FR/EN switch).
+const translations = await getPostTranslations(post);
+Astro.locals.alternates = translations;
 ---
 
 <BaseLayout
@@ -30,8 +37,11 @@ const readingMinutes: number = remarkPluginFrontmatter.readingMinutes;
 		title,
 	}}
 >
-	<article class="grow break-words" data-pagefind-body lang={post.data.lang}>
-		<div id="blog-hero" class="mb-12"><Masthead content={post} readingMinutes={readingMinutes} /></div>
+	<article class="grow break-words" data-pagefind-body>
+		<div id="blog-hero" class="mb-12">
+			<Masthead content={post} readingMinutes={readingMinutes} />
+			<TranslationLink lang={lang} translations={translations} />
+		</div>
 		<div class="flex flex-col gap-10 lg:flex-row lg:items-start lg:justify-between">
 			{!!headings.length && <TOC headings={headings} />}
 			<div

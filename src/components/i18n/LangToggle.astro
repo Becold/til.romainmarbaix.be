@@ -1,16 +1,19 @@
 ---
 /**
  * FR / EN switch.
- * - Monolingual page: a link to the same page in the other language (/... <-> /en/...).
- * - Other pages (posts, notes): a button that switches the UI language client side.
+ * - Pages under /fr/ or /en/: a link to the same page in the other language,
+ *   or to its home page when the page has no translation.
+ * - 404 page: a button that switches the UI language client side.
  * Both remember the choice (see LangProvider).
  */
-import { alternatePaths, type Lang } from "@/i18n";
+import { alternatePaths, type Lang, localizePath } from "@/i18n";
 import T from "./T.astro";
 
 const uiLang = Astro.locals.uiLang;
 const other: Lang | undefined = uiLang ? (uiLang === "fr" ? "en" : "fr") : undefined;
-const href = other ? alternatePaths(Astro.url.pathname)[other] : undefined;
+// the same page in the other language, or that language's home page when there is no translation
+const alternates = Astro.locals.alternates ?? alternatePaths(Astro.url.pathname);
+const href = other ? (alternates[other] ?? localizePath("/", other)) : undefined;
 const classes = "hover:text-accent relative inline-flex h-9 cursor-pointer items-center px-2 font-semibold";
 ---
 

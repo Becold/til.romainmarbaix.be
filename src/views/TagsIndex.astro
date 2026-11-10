@@ -12,7 +12,7 @@ const { lang } = Astro.props;
 // Monolingual page: <T>, dates and links render only in this language (see src/i18n.ts)
 Astro.locals.uiLang = lang;
 
-const allPosts = await getAllPosts();
+const allPosts = await getAllPosts(lang);
 const allTags = getUniqueTagsWithCount(allPosts);
 
 const meta = {

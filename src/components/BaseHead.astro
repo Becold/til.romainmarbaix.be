@@ -1,21 +1,21 @@
 ---
 import { WEBMENTION_PINGBACK, WEBMENTION_URL } from "astro:env/client";
-import { alternatePaths, defaultLang, type Lang, languages, localize, ogLocales, stripLangPrefix } from "@/i18n";
+import { defaultLang, type Lang, languages, localize, ogLocales, stripLangPrefix } from "@/i18n";
 import { siteConfig } from "@/site.config";
 import type { SiteMeta } from "@/types";
 import "@/styles/global.css";
 
 type Props = SiteMeta & {
 	lang: Lang;
-	/** page exists at / and /en/: emit hreflang alternates */
-	alternates?: boolean;
+	/** URL of each language version of the page; hreflang is emitted when there are at least two */
+	alternates?: Partial<Record<Lang, string>> | undefined;
 };
 
 const {
 	articleDate,
 	articleModifiedDate,
 	articleTags,
-	alternates = false,
+	alternates,
 	description: rawDescription = siteConfig.description,
 	lang = defaultLang,
 	noindex = false,
@@ -32,7 +32,8 @@ const siteTitle = `${title} ${titleSeparator} ${siteConfig.title}`;
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 const socialImageURL = new URL(ogImage ? ogImage : "/social-card.png", Astro.site).href;
 
-const altPaths = alternates ? alternatePaths(Astro.url.pathname) : undefined;
+const altLangs = alternates ? languages.filter((l) => alternates[l]) : [];
+const altPaths = altLangs.length > 1 ? alternates : undefined;
 
 const author = { "@type": "Person", name: siteConfig.author, url: Astro.site?.href };
 const jsonLd = articleDate
@@ -87,10 +88,12 @@ const jsonLd = articleDate
 {
 	altPaths && (
 		<>
-			{languages.map((l) => (
-				<link href={new URL(altPaths[l], Astro.site)} hreflang={l} rel="alternate" />
+			{altLangs.map((l) => (
+				<link href={new URL(altPaths[l]!, Astro.site)} hreflang={l} rel="alternate" />
 			))}
-			<link href={new URL(altPaths[defaultLang], Astro.site)} hreflang="x-default" rel="alternate" />
+			{altPaths[defaultLang] && (
+				<link href={new URL(altPaths[defaultLang], Astro.site)} hreflang="x-default" rel="alternate" />
+			)}
 		</>
 	)
 }
@@ -106,7 +109,7 @@ const jsonLd = articleDate
 <meta content={canonicalURL} property="og:url" />
 <meta content={siteConfig.title} property="og:site_name" />
 <meta content={ogLocales[lang]} property="og:locale" />
-{altPaths && languages.filter((l) => l !== lang).map((l) => <meta content={ogLocales[l]} property="og:locale:alternate" />)}
+{altPaths && altLangs.filter((l) => l !== lang).map((l) => <meta content={ogLocales[l]} property="og:locale:alternate" />)}
 <meta content={socialImageURL} property="og:image" />
 <meta content="1200" property="og:image:width" />
 <meta content="630" property="og:image:height" />
@@ -134,8 +137,8 @@ const jsonLd = articleDate
 <link href="/sitemap-index.xml" rel="sitemap" />
 
 {/* RSS auto-discovery */}
-<link href="/rss.xml" title="TIL" rel="alternate" type="application/rss+xml" />
-<link href="/notes/rss.xml" title="Notes" rel="alternate" type="application/rss+xml" />
+<link href={`/${lang}/rss.xml`} title="TIL" rel="alternate" type="application/rss+xml" />
+<link href={`/${lang}/notes/rss.xml`} title="Notes" rel="alternate" type="application/rss+xml" />
 
 {/* Webmentions */}
 {
