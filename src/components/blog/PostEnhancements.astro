@@ -1,0 +1,40 @@
+---
+/**
+ * Client-side extras for post pages, loaded only when the page needs them:
+ * - Mermaid diagrams (<pre class="mermaid">, see src/plugins/mermaid.ts);
+ * - click-to-zoom on images in the post body.
+ */
+---
+
+<script>
+	async function renderMermaid() {
+		const blocks = document.querySelectorAll<HTMLElement>("pre.mermaid");
+		if (blocks.length === 0) return;
+		const { default: mermaid } = await import("mermaid");
+		const dark = document.documentElement.dataset.theme === "dark";
+		mermaid.initialize({ startOnLoad: false, theme: dark ? "dark" : "default" });
+		await mermaid.run({ nodes: blocks });
+	}
+
+	async function enableImageZoom() {
+		const images = document.querySelectorAll<HTMLImageElement>(".prose img");
+		if (images.length === 0) return;
+		const { default: mediumZoom } = await import("medium-zoom");
+		mediumZoom(images, { background: "var(--color-global-bg)", margin: 24 });
+	}
+
+	renderMermaid();
+	enableImageZoom();
+</script>
+
+<style is:global>
+	/* readable diagrams before and after rendering */
+	pre.mermaid {
+		background: transparent;
+		text-align: center;
+	}
+	.medium-zoom-overlay,
+	.medium-zoom-image--opened {
+		z-index: 100;
+	}
+</style>

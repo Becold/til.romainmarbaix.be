@@ -32,6 +32,8 @@
 		"mdast-util-to-hast": "^13.2.1",
 		"mdast-util-to-markdown": "^2.1.2",
 		"mdast-util-to-string": "^4.0.0",
+		"medium-zoom": "^1.1.2",
+		"mermaid": "^12.3.0",
 		"satori": "0.33.4",
 		"satori-html": "^0.3.2",
 		"satteri": "^0.10.5",

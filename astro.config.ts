@@ -10,6 +10,7 @@ import robotsTxt from "astro-robots-txt";
 import webmanifest from "astro-webmanifest";
 import { satteriAdmonitionsPlugin } from "./src/plugins/admonitions";
 import { satteriGithubCardPlugin } from "./src/plugins/github-cards";
+import { satteriMermaidPlugin } from "./src/plugins/mermaid";
 import {
 	satteriAutolinkHeadingsPlugin,
 	satteriExternalLinksPlugin,
@@ -74,6 +75,8 @@ export default defineConfig({
 		processor: satteri({
 			features: { directive: true },
 			mdastPlugins: [
+				// first, so Expressive Code never highlights ```mermaid blocks
+				satteriMermaidPlugin(),
 				satteriUnwrapImagesPlugin(),
 				satteriReadingTimePlugin(),
 				satteriGithubCardPlugin(),
