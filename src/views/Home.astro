@@ -42,40 +42,37 @@ const pinnedPosts = allPostsByDate
 		},
 	}}
 >
-	<section>
-		<h1 class="title mb-12">Today I Learned</h1>
-		<p class="mb-4">
-			<T
-				fr="Des astuces de dev apprises au jour le jour, notées ici pour ne pas les oublier. Une astuce par article, courte, avec un exemple."
-				en="Dev tips I learn day to day, written down so I don't forget them. One tip per post, short, with an example."
-			/>
-		</p>
-	</section>
-	<ActivityHeatmap lang={lang} />
-	{
-		pinnedPosts.length > 0 && (
-			<section class="mt-16">
-				<h2 class="title mb-6 text-xl"><T fr="Épinglés" en="Pinned" /></h2>
-				<ul class="space-y-4" role="list">
-					{pinnedPosts.map((p) => (
+	<div class="space-y-16">
+		<section>
+			<h1 class="title text-accent mb-6 text-xl">
+				<a href={localizePath("/posts/", lang)}><T fr="Derniers articles" en="Latest posts" /></a>
+			</h1>
+			<ul class="space-y-4" role="list">
+				{
+					latestPosts.map((p) => (
 						<li class="grid gap-1 sm:grid-cols-[auto_1fr]">
 							<PostPreview post={p} />
 						</li>
-					))}
-				</ul>
-			</section>
-		)
-	}
-	<section class="mt-16">
-		<h2 class="title text-accent mb-6 text-xl"><a href={localizePath("/posts/", lang)}><T fr="Derniers articles" en="Latest posts" /></a></h2>
-		<ul class="space-y-4" role="list">
-			{
-				latestPosts.map((p) => (
-					<li class="grid gap-1 sm:grid-cols-[auto_1fr]">
-						<PostPreview post={p} />
-					</li>
-				))
-			}
-		</ul>
-	</section>
+					))
+				}
+			</ul>
+		</section>
+		{
+			pinnedPosts.length > 0 && (
+				<section>
+					<h2 class="title mb-6 text-xl">
+						<T fr="Épinglés" en="Pinned" />
+					</h2>
+					<ul class="space-y-4" role="list">
+						{pinnedPosts.map((p) => (
+							<li class="grid gap-1 sm:grid-cols-[auto_1fr]">
+								<PostPreview post={p} />
+							</li>
+						))}
+					</ul>
+				</section>
+			)
+		}
+		<ActivityHeatmap lang={lang} />
+	</div>
 </PageLayout>
