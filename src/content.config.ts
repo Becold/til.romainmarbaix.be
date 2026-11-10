@@ -40,6 +40,8 @@ const post = defineCollection({
 				.optional()
 				.transform((str) => (str ? new Date(str) : undefined)),
 			pinned: z.boolean().default(false),
+			// Posts sharing the same value form a series, listed in publication order.
+			series: z.string().optional(),
 		}),
 });
 

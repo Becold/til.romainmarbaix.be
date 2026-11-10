@@ -11,7 +11,8 @@
 		"preview": "astro preview",
 		"check": "astro check && biome check",
 		"lint": "biome check --write",
-		"format": "prettier -w . --cache"
+		"format": "prettier -w . --cache",
+		"test": "vitest run"
 	},
 	"dependencies": {
 		"@astrojs/markdown-satteri": "^0.4.1",
@@ -52,7 +53,8 @@
 		"prettier-plugin-astro": "1.0.0",
 		"prettier-plugin-tailwindcss": "^0.8.1",
 		"reading-time": "^1.5.0",
-		"typescript": "^6.0.3"
+		"typescript": "^6.0.3",
+		"vitest": "^5.1.0"
 	},
 	"overrides": {
 		"sharp": "^0.35.4"
