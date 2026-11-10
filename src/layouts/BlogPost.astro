@@ -9,6 +9,8 @@ import RelatedPosts from "@/components/blog/RelatedPosts.astro";
 import SeriesBox from "@/components/blog/SeriesBox.astro";
 import TranslationLink from "@/components/i18n/TranslationLink.astro";
 import { getAllPosts, getPostTranslations } from "@/data/post";
+import { siteConfig } from "@/site.config";
+import { getGitLastModified } from "@/utils/git";
 import { getAdjacentPosts, getRelatedPosts, getSeries } from "@/utils/postNav";
 import WebMentions from "@/components/blog/webmentions/index.astro";
 
@@ -29,6 +31,13 @@ Astro.locals.uiLang = lang;
 const translations = await getPostTranslations(post);
 Astro.locals.alternates = translations;
 
+// Last update: frontmatter `updatedDate`, else the last git commit of the file; shown only if after the publish day
+const sourcePath = post.filePath?.replaceAll("\\", "/");
+const candidate = updatedDate ?? (sourcePath ? getGitLastModified(sourcePath) : undefined);
+const dayOf = (d: Date) => d.toISOString().slice(0, 10);
+const lastUpdated = candidate && dayOf(candidate) > dayOf(publishDate) ? candidate : undefined;
+const editUrl = sourcePath ? `${siteConfig.repoUrl}/blob/${siteConfig.repoBranch}/${sourcePath}` : undefined;
+
 // Navigation within the posts of the same language
 const siblings = await getAllPosts(lang);
 const related = getRelatedPosts(post, siblings);
@@ -39,7 +48,7 @@ const series = getSeries(post, siblings);
 <BaseLayout
 	meta={{
 		articleDate: publishDate.toISOString(),
-		articleModifiedDate: updatedDate?.toISOString(),
+		articleModifiedDate: lastUpdated?.toISOString(),
 		articleTags: tags,
 		description,
 		lang,
@@ -49,7 +58,7 @@ const series = getSeries(post, siblings);
 >
 	<article class="grow break-words" data-pagefind-body>
 		<div id="blog-hero" class="mb-12">
-			<Masthead content={post} readingMinutes={readingMinutes} />
+			<Masthead content={post} readingMinutes={readingMinutes} updatedDate={lastUpdated} />
 			<TranslationLink lang={lang} translations={translations} />
 			<SeriesBox series={series} current={post} />
 		</div>
@@ -63,6 +72,15 @@ const series = getSeries(post, siblings);
 			</div>
 		</div>
 		<footer data-pagefind-ignore>
+			{
+				editUrl && (
+					<p class="mt-10 text-sm">
+						<a class="cactus-link" href={editUrl} rel="noreferrer" target="_blank">
+							<T fr="Modifier sur GitHub" en="Edit on GitHub" />
+						</a>
+					</p>
+				)
+			}
 			<PostNav previous={previous} next={next} />
 			<RelatedPosts posts={related} />
 		</footer>

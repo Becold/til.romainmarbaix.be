@@ -20,6 +20,9 @@ export const siteConfig: SiteConfig = {
 	lang: "en-GB",
 	// Meta property, found in src/components/BaseHead.astro L:42
   ogLocale: "en_GB",
+	// Source repository, used for "edit on GitHub" links
+	repoUrl: "https://github.com/Becold/til.romainmarbaix.be",
+	repoBranch: "master",
   // Determines whether to show the logo in the templates header
 	showLogo: true,
 	// Date.prototype.toLocaleDateString() parameters, found in src/utils/date.ts.

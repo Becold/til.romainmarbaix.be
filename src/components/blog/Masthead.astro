@@ -8,11 +8,14 @@ import T from "@/components/i18n/T.astro";
 interface Props {
 	content: CollectionEntry<"post">;
 	readingMinutes: number;
+	/** last update to show, already resolved by the layout (frontmatter or git) */
+	updatedDate?: Date | undefined;
 }
 
 const {
 	content: { data },
 	readingMinutes,
+	updatedDate,
 } = Astro.props;
 ---
 
@@ -40,10 +43,10 @@ const {
 		<T fr={`${readingMinutes} min de lecture`} en={`${readingMinutes} min read`} />
 	</p>
 	{
-		data.updatedDate && (
+		updatedDate && (
 			<span class="bg-quote/5 text-quote rounded-lg px-2 py-1">
 				<T fr="Mis à jour :" en="Updated:" />
-				<FormattedDate class="ms-1" date={data.updatedDate} />
+				<FormattedDate class="ms-1" date={updatedDate} />
 			</span>
 		)
 	}

@@ -7,7 +7,10 @@ export interface SiteConfig {
 	};
 	description: string;
 	lang: string;
-  ogLocale: string;
+	ogLocale: string;
+	/** GitHub repository of the site, for "edit on GitHub" links */
+	repoUrl: string;
+	repoBranch: string;
   showLogo: boolean;
 	title: string;
 	url: string;

@@ -25,6 +25,9 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v6
+        with:
+          # full history: post update dates come from git log
+          fetch-depth: 0
 
       - name: Setup Node
         uses: actions/setup-node@v6
