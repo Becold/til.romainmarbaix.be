@@ -8,12 +8,28 @@
 
 <script>
 	async function renderMermaid() {
-		const blocks = document.querySelectorAll<HTMLElement>("pre.mermaid");
+		const blocks = [...document.querySelectorAll<HTMLElement>("pre.mermaid")];
 		if (blocks.length === 0) return;
 		const { default: mermaid } = await import("mermaid");
-		const dark = document.documentElement.dataset.theme === "dark";
-		mermaid.initialize({ startOnLoad: false, theme: dark ? "dark" : "default" });
-		await mermaid.run({ nodes: blocks });
+		// mermaid.run() replaces the source with an SVG: keep the source to render again
+		for (const block of blocks) block.dataset.source = block.textContent ?? "";
+
+		const render = async () => {
+			const dark = document.documentElement.dataset.theme === "dark";
+			mermaid.initialize({ startOnLoad: false, theme: dark ? "dark" : "default" });
+			for (const block of blocks) {
+				block.textContent = block.dataset.source ?? "";
+				block.removeAttribute("data-processed");
+			}
+			await mermaid.run({ nodes: blocks });
+		};
+		await render();
+
+		// follow theme changes from the toggle and from the OS setting (both set <html data-theme>)
+		new MutationObserver(() => render()).observe(document.documentElement, {
+			attributes: true,
+			attributeFilter: ["data-theme"],
+		});
 	}
 
 	async function enableImageZoom() {

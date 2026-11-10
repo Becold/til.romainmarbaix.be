@@ -24,7 +24,7 @@ Deploy: `.github/workflows/deploy.yml` builds, checks internal links (lychee, of
 ## Content
 
 - Markdown/MDX lives in `content/` (not `src/content/`): `content/posts`, `content/tags` (optional tag page overrides). The theme's Notes feature was removed on purpose. The schema is in `src/content.config.ts`.
-- `content/` is intentionally **not committed** for now. A clean clone builds an empty site; "collection is empty" warnings are expected.
+- Posts in `content/posts/` are committed: CI deploys only tracked posts. "Collection is empty" warnings for `content/tags` are expected.
 - Every post has `lang: fr | en` (default `en`). A post is published only under its own language: `/fr/posts/<id>/` or `/en/posts/<id>/`. Build URLs with `postUrl()` from `src/data/post.ts`, never by hand.
 - Translations are linked by giving both versions the same `translationKey`. Slugs may differ. The build throws if two entries of the same language share a key.
 - Post `title` is max 60 characters.
@@ -53,7 +53,7 @@ The repo uses a repo-local identity (personal GitHub noreply address), not the g
 - `src/utils/postNav.ts` (pure, tested): `getRelatedPosts` (shared tags), `getAdjacentPosts` (prev/next), `getSeries` (`series` frontmatter), `isPublished` (no drafts, no future `publishDate` in production; used by `getAllPosts`).
 - `src/layouts/BlogPost.astro` wires them: `SeriesBox` under the title; in a `data-pagefind-ignore` footer: "edit on GitHub" link, `PostNav`, `RelatedPosts`, `Comments`.
 - Update date: frontmatter `updatedDate`, else `getGitLastModified(post.filePath)` (`src/utils/git.ts`: author date of the last commit, only if the file has more than one commit), shown only when its day is after `publishDate`. Bulk commits touching every post (formatting, renames) still mark them as updated: set `updatedDate` by hand or avoid them.
-- ```mermaid blocks become `<pre class="mermaid">` in `src/plugins/mermaid.ts` (registered first, so Expressive Code skips them). `PostEnhancements.astro` lazy-loads `mermaid` and `medium-zoom` (image zoom) only when the page needs them.
+- ```mermaid blocks become `<pre class="mermaid">` in `src/plugins/mermaid.ts` (registered first, so Expressive Code skips them). `PostEnhancements.astro` lazy-loads `mermaid` and `medium-zoom` (image zoom) only when the page needs them. It keeps each diagram source in `data-source` and re-renders on `<html data-theme>` changes (MutationObserver), so diagrams follow the light/dark toggle and the OS setting.
 - Home: `ActivityHeatmap.astro` (`src/utils/activity.ts`). `/{lang}/random/` redirects to a random post (noindex, not in sitemap). `/llms.txt` lists all posts.
 
 ## Services to configure (`src/site.config.ts`)
