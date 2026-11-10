@@ -1,6 +1,7 @@
 ---
 import { type Lang, localizePath } from "@/i18n";
 import type { CollectionEntry } from "astro:content";
+import ActivityHeatmap from "@/components/ActivityHeatmap.astro";
 import PostPreview from "@/components/blog/PostPreview.astro";
 import T from "@/components/i18n/T.astro";
 import { getAllPosts } from "@/data/post";
@@ -50,6 +51,7 @@ const pinnedPosts = allPostsByDate
 			/>
 		</p>
 	</section>
+	<ActivityHeatmap lang={lang} />
 	{
 		pinnedPosts.length > 0 && (
 			<section class="mt-16">
