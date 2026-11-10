@@ -52,7 +52,7 @@ The repo uses a repo-local identity (personal GitHub noreply address), not the g
 
 - `src/utils/postNav.ts` (pure, tested): `getRelatedPosts` (shared tags), `getAdjacentPosts` (prev/next), `getSeries` (`series` frontmatter), `isPublished` (no drafts, no future `publishDate` in production; used by `getAllPosts`).
 - `src/layouts/BlogPost.astro` wires them: `SeriesBox` under the title; in a `data-pagefind-ignore` footer: "edit on GitHub" link, `PostNav`, `RelatedPosts`, `Comments`.
-- Update date: frontmatter `updatedDate`, else `getGitLastModified(post.filePath)` (`src/utils/git.ts`), shown only when its day is after `publishDate`.
+- Update date: frontmatter `updatedDate`, else `getGitLastModified(post.filePath)` (`src/utils/git.ts`: author date of the last commit, only if the file has more than one commit), shown only when its day is after `publishDate`. Bulk commits touching every post (formatting, renames) still mark them as updated: set `updatedDate` by hand or avoid them.
 - ```mermaid blocks become `<pre class="mermaid">` in `src/plugins/mermaid.ts` (registered first, so Expressive Code skips them). `PostEnhancements.astro` lazy-loads `mermaid` and `medium-zoom` (image zoom) only when the page needs them.
 - Home: `ActivityHeatmap.astro` (`src/utils/activity.ts`). `/{lang}/random/` redirects to a random post (noindex, not in sitemap). `/llms.txt` lists all posts.
 
