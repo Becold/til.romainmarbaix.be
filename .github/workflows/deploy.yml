@@ -42,6 +42,13 @@ jobs:
       - name: Build
         run: npm run build
 
+      # broken internal links fail the build (external links are not checked: too flaky)
+      - name: Check links
+        uses: lycheeverse/lychee-action@v2
+        with:
+          args: --offline --no-progress --root-dir ${{ github.workspace }}/dist 'dist/**/*.html'
+          fail: true
+
       - name: Upload Pages artifact
         if: github.event_name != 'pull_request'
         uses: actions/upload-pages-artifact@v4

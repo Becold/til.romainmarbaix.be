@@ -15,10 +15,11 @@ npm only. The theme ships pnpm files; they were removed. Node version: `.nvmrc`.
 - `npm run preview`: serve `dist/`.
 - `npx astro check`: type check. It currently reports 8 known errors in `astro.config.ts` and `src/plugins/satteri.ts` (satteri plugin typings from the theme). They do not break the build. Any other error is new.
 - `npm run lint` (Biome) / `npm run format` (Prettier).
+- `npm test`: Vitest unit tests for the pure helpers in `src/utils/*.test.ts` (post navigation, scheduling, activity heatmap, git dates).
 
-There are no tests. Verify a change with `npm run build` and by inspecting the generated HTML in `dist/` (`<html lang>`, `hreflang` links, canonical, JSON-LD).
+Beyond `npm test`, verify a change with `npm run build` and by inspecting the generated HTML in `dist/` (`<html lang>`, `hreflang` links, canonical, JSON-LD).
 
-Deploy: `.github/workflows/deploy.yml` builds and deploys `dist/` to GitHub Pages on push to `master`/`main`. `public/CNAME` sets the custom domain.
+Deploy: `.github/workflows/deploy.yml` builds, checks internal links (lychee, offline) and deploys `dist/` to GitHub Pages on push to `master`/`main`, and daily at 05:17 UTC (publishes scheduled posts, refreshes the heatmap). It checks out the full history (`fetch-depth: 0`): post update dates come from `git log`. The custom domain is set in the repo Pages settings (`public/CNAME` is ignored by Actions deployments).
 
 ## Content
 
@@ -46,3 +47,17 @@ Deploy: `.github/workflows/deploy.yml` builds and deploys `dist/` to GitHub Page
 ## Git
 
 The repo uses a repo-local identity (personal GitHub noreply address), not the global work identity. Keep it that way.
+
+## Post page features
+
+- `src/utils/postNav.ts` (pure, tested): `getRelatedPosts` (shared tags), `getAdjacentPosts` (prev/next), `getSeries` (`series` frontmatter), `isPublished` (no drafts, no future `publishDate` in production; used by `getAllPosts`).
+- `src/layouts/BlogPost.astro` wires them: `SeriesBox` under the title; in a `data-pagefind-ignore` footer: "edit on GitHub" link, `PostNav`, `RelatedPosts`, `Comments`.
+- Update date: frontmatter `updatedDate`, else `getGitLastModified(post.filePath)` (`src/utils/git.ts`), shown only when its day is after `publishDate`.
+- ```mermaid blocks become `<pre class="mermaid">` in `src/plugins/mermaid.ts` (registered first, so Expressive Code skips them). `PostEnhancements.astro` lazy-loads `mermaid` and `medium-zoom` (image zoom) only when the page needs them.
+- Home: `ActivityHeatmap.astro` (`src/utils/activity.ts`). `/{lang}/random/` redirects to a random post (noindex, not in sitemap). `/llms.txt` lists all posts.
+
+## Services to configure (`src/site.config.ts`)
+
+Empty values disable them; nothing renders.
+- `giscus.repoId` / `giscus.categoryId`: enable Discussions on the repo (`gh api -X PATCH repos/Becold/til.romainmarbaix.be -F has_discussions=true`), install https://github.com/apps/giscus on it, then read the IDs with `gh api graphql -f query='{ repository(owner:"Becold", name:"til.romainmarbaix.be") { id discussionCategories(first:20) { nodes { id name } } } }'`.
+- `cloudflareAnalyticsToken`: from Cloudflare dashboard → Web Analytics → add site `til.romainmarbaix.be` (the DNS record stays "DNS only", so use the JS snippet token).
