@@ -40,3 +40,8 @@ export function getSeries<P extends NavPost>(
 	if (posts.length < 2) return undefined;
 	return { name, posts, index: posts.findIndex((other) => other.id === post.id) };
 }
+
+/** Visible in production: not a draft and not scheduled for later. Posts dated in the future appear on the daily rebuild. */
+export function isPublished(data: { draft: boolean; publishDate: Date }, now: Date = new Date()): boolean {
+	return !data.draft && data.publishDate.getTime() <= now.getTime();
+}

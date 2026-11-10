@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { getAdjacentPosts, getRelatedPosts, getSeries } from "./postNav";
+import { getAdjacentPosts, getRelatedPosts, getSeries, isPublished } from "./postNav";
 
 const p = (id: string, date: string, tags: string[] = [], series?: string) => ({
 	id,
@@ -57,5 +57,19 @@ describe("getSeries", () => {
 		const none = p("b", "2026-01-02");
 		expect(getSeries(alone, [alone, none])).toBeUndefined();
 		expect(getSeries(none, [alone, none])).toBeUndefined();
+	});
+});
+
+describe("isPublished", () => {
+	const now = new Date("2026-11-10T12:00:00Z");
+	it("is false for drafts", () => {
+		expect(isPublished({ draft: true, publishDate: new Date("2026-01-01") }, now)).toBe(false);
+	});
+	it("is false for a future date", () => {
+		expect(isPublished({ draft: false, publishDate: new Date("2026-11-11") }, now)).toBe(false);
+	});
+	it("is true for today at midnight and for yesterday", () => {
+		expect(isPublished({ draft: false, publishDate: new Date("2026-11-10") }, now)).toBe(true);
+		expect(isPublished({ draft: false, publishDate: new Date("2026-11-09") }, now)).toBe(true);
 	});
 });

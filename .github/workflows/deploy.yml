@@ -6,6 +6,9 @@ on:
   pull_request:
     branches: [master, main]
   workflow_dispatch:
+  # daily rebuild: publishes posts dated in the future on their day, refreshes the activity heatmap
+  schedule:
+    - cron: "17 5 * * *"
 
 permissions:
   contents: read

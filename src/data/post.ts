@@ -1,5 +1,6 @@
 import { type CollectionEntry, getCollection } from "astro:content";
 import type { Lang } from "@/i18n";
+import { isPublished } from "@/utils/postNav";
 
 /** URL of each language version of a page. */
 export type Translations = Partial<Record<Lang, string>>;
@@ -10,11 +11,11 @@ export function postUrl(post: CollectionEntry<"post">): string {
 }
 
 
-/** filter out draft posts based on the environment; with `lang`, only posts written in that language */
+/** in production, only published posts (no drafts, no future dates); with `lang`, only posts written in that language */
 export async function getAllPosts(lang?: Lang): Promise<CollectionEntry<"post">[]> {
 	return await getCollection("post", ({ data }) => {
 		if (lang && data.lang !== lang) return false;
-		return import.meta.env.PROD ? !data.draft : true;
+		return import.meta.env.PROD ? isPublished(data) : true;
 	});
 }
 
