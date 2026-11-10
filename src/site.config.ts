@@ -39,16 +39,12 @@ export const menuLinks: { path: string; title: Localized }[] = [
 		title: { fr: "Accueil", en: "Home" },
 	},
 	{
+		path: "/posts/",
+		title: { fr: "Articles", en: "Posts" },
+	},
+	{
 		path: "/about/",
 		title: { fr: "À propos", en: "About" },
-	},
-	{
-		path: "/posts/",
-		title: { fr: "TIL", en: "TIL" },
-	},
-	{
-		path: "/notes/",
-		title: { fr: "Notes", en: "Notes" },
 	},
 ];
 

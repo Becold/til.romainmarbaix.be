@@ -1,5 +1,5 @@
 import type { GetStaticPaths } from "astro";
-import { getAllPosts, getNotes, getUniqueTags } from "@/data/post";
+import { getAllPosts, getUniqueTags } from "@/data/post";
 import type { Lang } from "@/i18n";
 import { collectionDateSort } from "@/utils/date";
 
@@ -37,11 +37,4 @@ export const tagPaths = (lang: Lang) =>
 				params: { tag },
 			});
 		});
-	}) satisfies GetStaticPaths;
-
-export const notesPaths = (lang: Lang) =>
-	(async ({ paginate }) => {
-		const MAX_NOTES_PER_PAGE = 10;
-		const notes = await getNotes(lang);
-		return paginate(notes.sort(collectionDateSort), { pageSize: MAX_NOTES_PER_PAGE });
 	}) satisfies GetStaticPaths;

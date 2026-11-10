@@ -1,4 +1,4 @@
-/** Interface languages. Content (posts, notes) is written in one of these. */
+/** Interface languages. Posts are written in one of these. */
 export const languages = ["fr", "en"] as const;
 export type Lang = (typeof languages)[number];
 
@@ -49,6 +49,6 @@ export function alternatePaths(path: string): Record<Lang, string> {
 /**
  * How UI strings render, set per page through Astro.locals.uiLang:
  * - set (list pages under /fr/ and /en/): one language only, server side, good for SEO;
- * - unset (posts, notes, 404: one URL for both UI languages): every language in the HTML,
+ * - unset (404 only: one URL for both UI languages): every language in the HTML,
  *   CSS shows the reader's choice.
  */

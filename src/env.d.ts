@@ -10,7 +10,7 @@ declare namespace App {
 		uiLang?: import("./i18n").Lang;
 		/**
 		 * URL of each language version of the page, when it differs from the /fr/ <-> /en/ rule
-		 * (posts, notes, tags, pagination). A missing language means no translation:
+		 * (posts, tags, pagination). A missing language means no translation:
 		 * no hreflang for it, and the FR/EN switch goes to that language's home page.
 		 */
 		alternates?: Partial<Record<import("./i18n").Lang, string>>;

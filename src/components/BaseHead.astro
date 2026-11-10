@@ -137,8 +137,7 @@ const jsonLd = articleDate
 <link href="/sitemap-index.xml" rel="sitemap" />
 
 {/* RSS auto-discovery */}
-<link href={`/${lang}/rss.xml`} title="TIL" rel="alternate" type="application/rss+xml" />
-<link href={`/${lang}/notes/rss.xml`} title="Notes" rel="alternate" type="application/rss+xml" />
+<link href={`/${lang}/rss.xml`} title={siteConfig.title} rel="alternate" type="application/rss+xml" />
 
 {/* Webmentions */}
 {

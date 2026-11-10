@@ -9,10 +9,6 @@ export function postUrl(post: CollectionEntry<"post">): string {
 	return `/${post.data.lang}/posts/${post.id}/`;
 }
 
-/** URL of a note, under the language it is written in. */
-export function noteUrl(note: CollectionEntry<"note">): string {
-	return `/${note.data.lang}/notes/${note.id}/`;
-}
 
 /** filter out draft posts based on the environment; with `lang`, only posts written in that language */
 export async function getAllPosts(lang?: Lang): Promise<CollectionEntry<"post">[]> {
@@ -22,10 +18,6 @@ export async function getAllPosts(lang?: Lang): Promise<CollectionEntry<"post">[
 	});
 }
 
-/** notes written in a language */
-export async function getNotes(lang: Lang): Promise<CollectionEntry<"note">[]> {
-	return await getCollection("note", ({ data }) => data.lang === lang);
-}
 
 /** Get tag metadata by tag name */
 export async function getTagMeta(tag: string): Promise<CollectionEntry<"tag"> | undefined> {
@@ -68,16 +60,14 @@ export function getUniqueTagsWithCount(posts: CollectionEntry<"post">[]): [strin
 	].sort((a, b) => b[1] - a[1]);
 }
 
-type Translatable = CollectionEntry<"post"> | CollectionEntry<"note">;
-
 /**
  * URLs of every language version of an entry, itself included, found through `translationKey`.
  * Fails the build when two entries of the same language share a key.
  */
-function findTranslations<E extends Translatable>(
-	entry: E,
-	all: E[],
-	url: (e: E) => string,
+function findTranslations(
+	entry: CollectionEntry<"post">,
+	all: CollectionEntry<"post">[],
+	url: (e: CollectionEntry<"post">) => string,
 ): Translations {
 	const translations: Translations = { [entry.data.lang]: url(entry) };
 	const key = entry.data.translationKey;
@@ -97,8 +87,4 @@ function findTranslations<E extends Translatable>(
 
 export async function getPostTranslations(post: CollectionEntry<"post">): Promise<Translations> {
 	return findTranslations(post, await getAllPosts(), postUrl);
-}
-
-export async function getNoteTranslations(note: CollectionEntry<"note">): Promise<Translations> {
-	return findTranslations(note, await getCollection("note"), noteUrl);
 }
