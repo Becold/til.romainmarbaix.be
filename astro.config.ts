@@ -32,8 +32,11 @@ export default defineConfig({
 		sitemap({
 			// adds hreflang links between /fr/... and /en/... pages
 			i18n: { defaultLocale: "en", locales: { fr: "fr", en: "en" } },
-			// "/" only redirects to /fr/ or /en/
-			filter: (page) => new URL(page).pathname !== "/",
+			// "/" and the random post pages only redirect
+			filter: (page) => {
+				const path = new URL(page).pathname;
+				return path !== "/" && !path.endsWith("/random/");
+			},
 		}),
 		mdx(),
 		robotsTxt(),

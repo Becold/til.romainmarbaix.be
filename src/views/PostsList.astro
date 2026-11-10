@@ -59,6 +59,9 @@ const descYearKeys = Object.keys(groupedByYear).sort((a, b) => +b - +a);
 			<span class="sr-only"><T fr="Flux RSS" en="RSS feed" /></span>
 			<Icon aria-hidden="true" class="h-6 w-6" focusable="false" name="mdi:rss" />
 		</a>
+		<a class="cactus-link ms-auto text-sm" href={localizePath("/random/", lang)}>
+			<T fr="Un article au hasard" en="Random post" />
+		</a>
 	</div>
 	<div class="grid sm:grid-cols-[3fr_1fr] sm:gap-x-8 sm:gap-y-16">
 		<div>
