@@ -4,6 +4,7 @@ import { type CollectionEntry, render } from "astro:content";
 import Masthead from "@/components/blog/Masthead.astro";
 import T from "@/components/i18n/T.astro";
 import TOC from "@/components/blog/TOC.astro";
+import Comments from "@/components/blog/Comments.astro";
 import PostEnhancements from "@/components/blog/PostEnhancements.astro";
 import PostNav from "@/components/blog/PostNav.astro";
 import RelatedPosts from "@/components/blog/RelatedPosts.astro";
@@ -84,6 +85,7 @@ const series = getSeries(post, siblings);
 			}
 			<PostNav previous={previous} next={next} />
 			<RelatedPosts posts={related} />
+			<Comments lang={lang} />
 		</footer>
 	</article>
 	<PostEnhancements />

@@ -1,0 +1,61 @@
+---
+/**
+ * Giscus comments (GitHub Discussions of the site repo). Renders nothing until
+ * siteConfig.giscus.repoId and categoryId are filled (see CLAUDE.md).
+ */
+import T from "@/components/i18n/T.astro";
+import type { Lang } from "@/i18n";
+import { siteConfig } from "@/site.config";
+
+interface Props {
+	lang: Lang;
+}
+
+const { lang } = Astro.props;
+const { repo, repoId, category, categoryId } = siteConfig.giscus;
+const enabled = Boolean(repoId && categoryId);
+---
+
+{
+	enabled && (
+		<section class="mt-12" data-pagefind-ignore>
+			<h2 class="title mb-4 text-lg">
+				<T fr="Commentaires" en="Comments" />
+			</h2>
+			<div class="giscus" />
+			<script
+				is:inline
+				src="https://giscus.app/client.js"
+				data-repo={repo}
+				data-repo-id={repoId}
+				data-category={category}
+				data-category-id={categoryId}
+				data-mapping="pathname"
+				data-strict="1"
+				data-reactions-enabled="1"
+				data-emit-metadata="0"
+				data-input-position="top"
+				data-lang={lang}
+				data-loading="lazy"
+				crossorigin="anonymous"
+				async
+			/>
+			<script is:inline>
+				(() => {
+					const giscusTheme = () =>
+						document.documentElement.getAttribute("data-theme") === "dark" ? "dark" : "light";
+					const script = document.querySelector('script[src="https://giscus.app/client.js"]');
+					script?.setAttribute("data-theme", giscusTheme());
+					// follow the site theme toggle (src/components/ThemeToggle.astro)
+					document.addEventListener("theme-change", () => {
+						const frame = document.querySelector("iframe.giscus-frame");
+						frame?.contentWindow?.postMessage(
+							{ giscus: { setConfig: { theme: giscusTheme() } } },
+							"https://giscus.app",
+						);
+					});
+				})();
+			</script>
+		</section>
+	)
+}

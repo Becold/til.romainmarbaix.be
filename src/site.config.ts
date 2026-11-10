@@ -23,6 +23,15 @@ export const siteConfig: SiteConfig = {
 	// Source repository, used for "edit on GitHub" links
 	repoUrl: "https://github.com/Becold/til.romainmarbaix.be",
 	repoBranch: "master",
+	// Giscus comments (https://giscus.app): fill repoId and categoryId to enable them
+	giscus: {
+		repo: "Becold/til.romainmarbaix.be",
+		repoId: "",
+		category: "Comments",
+		categoryId: "",
+	},
+	// Cloudflare Web Analytics site token: fill it to enable analytics (production only)
+	cloudflareAnalyticsToken: "",
   // Determines whether to show the logo in the templates header
 	showLogo: true,
 	// Date.prototype.toLocaleDateString() parameters, found in src/utils/date.ts.

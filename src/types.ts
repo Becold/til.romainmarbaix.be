@@ -11,6 +11,10 @@ export interface SiteConfig {
 	/** GitHub repository of the site, for "edit on GitHub" links */
 	repoUrl: string;
 	repoBranch: string;
+	/** Giscus comments; empty IDs disable them */
+	giscus: { repo: string; repoId: string; category: string; categoryId: string };
+	/** Cloudflare Web Analytics site token; empty disables it */
+	cloudflareAnalyticsToken: string;
   showLogo: boolean;
 	title: string;
 	url: string;
