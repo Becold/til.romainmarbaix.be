@@ -1,0 +1,40 @@
+---
+/** Links to the previous (older) and next (newer) post of the same language. */
+import type { CollectionEntry } from "astro:content";
+import T from "@/components/i18n/T.astro";
+import { postUrl } from "@/data/post";
+
+interface Props {
+	previous?: CollectionEntry<"post"> | undefined;
+	next?: CollectionEntry<"post"> | undefined;
+}
+
+const { previous, next } = Astro.props;
+---
+
+{
+	(previous || next) && (
+		<nav class="mt-12 grid gap-4 sm:grid-cols-2">
+			<div>
+				{previous && (
+					<a class="group block" href={postUrl(previous)} rel="prev">
+						<span class="text-muted block text-xs">
+							← <T fr="Article précédent" en="Previous post" />
+						</span>
+						<span class="cactus-link">{previous.data.title}</span>
+					</a>
+				)}
+			</div>
+			<div class="sm:text-end">
+				{next && (
+					<a class="group block" href={postUrl(next)} rel="next">
+						<span class="text-muted block text-xs">
+							<T fr="Article suivant" en="Next post" /> →
+						</span>
+						<span class="cactus-link">{next.data.title}</span>
+					</a>
+				)}
+			</div>
+		</nav>
+	)
+}

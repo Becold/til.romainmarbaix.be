@@ -1,0 +1,45 @@
+---
+/** Series navigation shown above a post that belongs to a series of at least two posts. */
+import type { CollectionEntry } from "astro:content";
+import T from "@/components/i18n/T.astro";
+import { postUrl } from "@/data/post";
+import type { getSeries } from "@/utils/postNav";
+
+interface Props {
+	series: ReturnType<typeof getSeries<CollectionEntry<"post">>>;
+	current: CollectionEntry<"post">;
+}
+
+const { series, current } = Astro.props;
+---
+
+{
+	series && (
+		<aside class="border-accent/40 mt-6 rounded-md border px-4 py-3" data-pagefind-ignore>
+			<p class="font-semibold">
+				<T fr={`Série : ${series.name}`} en={`Series: ${series.name}`} />
+				<span class="text-muted ms-2 text-xs">
+					<T
+						fr={`Partie ${series.index + 1}/${series.posts.length}`}
+						en={`Part ${series.index + 1}/${series.posts.length}`}
+					/>
+				</span>
+			</p>
+			<ol class="mt-2 list-inside list-decimal space-y-1">
+				{series.posts.map((p) => (
+					<li>
+						{p.id === current.id ? (
+							<span aria-current="page" class="font-semibold">
+								{p.data.title}
+							</span>
+						) : (
+							<a class="cactus-link" href={postUrl(p)}>
+								{p.data.title}
+							</a>
+						)}
+					</li>
+				))}
+			</ol>
+		</aside>
+	)
+}
