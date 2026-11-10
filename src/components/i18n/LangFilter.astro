@@ -1,0 +1,73 @@
+---
+/**
+ * Filters post lists by the language a post is written in (all / fr / en).
+ * Works on every list item that contains a [data-post-lang] element (see PostPreview).
+ * The choice is kept per reader in localStorage.
+ */
+import T from "./T.astro";
+
+const options = [
+	{ value: "all", label: { fr: "Tous", en: "All" } },
+	{ value: "fr", label: { fr: "Français", en: "French" } },
+	{ value: "en", label: { fr: "Anglais", en: "English" } },
+] as const;
+---
+
+<lang-filter class="mb-10 flex flex-wrap items-center gap-2">
+	<span class="text-muted"><T fr="Langue des articles :" en="Post language:" /></span>
+	{
+		options.map((o) => (
+			<button
+				class="cactus-link cursor-pointer px-1 aria-pressed:font-bold aria-pressed:no-underline"
+				data-value={o.value}
+				type="button"
+				aria-pressed="false"
+			>
+				<T text={o.label} />
+			</button>
+		))
+	}
+</lang-filter>
+
+<script>
+	const STORAGE_KEY = "post-lang-filter";
+
+	function readFilter(): string {
+		try {
+			return localStorage.getItem(STORAGE_KEY) ?? "all";
+		} catch {
+			return "all";
+		}
+	}
+
+	function applyFilter(value: string) {
+		for (const item of document.querySelectorAll<HTMLElement>("main li:has([data-post-lang])")) {
+			const lang = item.querySelector<HTMLElement>("[data-post-lang]")?.dataset.postLang;
+			item.hidden = value !== "all" && lang !== value;
+		}
+		// hide list sections (e.g. a year) left with no visible post
+		for (const section of document.querySelectorAll<HTMLElement>("main section:has([data-post-lang])")) {
+			section.hidden = !section.querySelector("li:has([data-post-lang]):not([hidden])");
+		}
+		for (const button of document.querySelectorAll<HTMLButtonElement>("lang-filter button")) {
+			button.setAttribute("aria-pressed", String(button.dataset.value === value));
+		}
+	}
+
+	class LangFilter extends HTMLElement {
+		connectedCallback() {
+			applyFilter(readFilter());
+			for (const button of this.querySelectorAll<HTMLButtonElement>("button")) {
+				button.addEventListener("click", () => {
+					const value = button.dataset.value ?? "all";
+					try {
+						localStorage.setItem(STORAGE_KEY, value);
+					} catch {}
+					applyFilter(value);
+				});
+			}
+		}
+	}
+
+	customElements.define("lang-filter", LangFilter);
+</script>

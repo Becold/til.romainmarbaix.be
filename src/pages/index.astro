@@ -1,0 +1,39 @@
+---
+/**
+ * Every page lives under /fr/ or /en/. This page only sends the reader to one of them:
+ * their saved choice, else the browser language, else French (also without JavaScript).
+ */
+import { alternatePaths, defaultLang, languages } from "@/i18n";
+import { siteConfig } from "@/site.config";
+
+const fallback = alternatePaths("/")[defaultLang];
+const site = Astro.site;
+---
+
+<!doctype html>
+<html lang={defaultLang}>
+	<head>
+		<meta charset="utf-8" />
+		<meta content="width=device-width, initial-scale=1.0" name="viewport" />
+		<title>{siteConfig.title}</title>
+		<meta content="noindex, follow" name="robots" />
+		<link href={new URL(fallback, site)} rel="canonical" />
+		{languages.map((l) => <link href={new URL(alternatePaths("/")[l], site)} hreflang={l} rel="alternate" />)}
+		<link href={new URL(fallback, site)} hreflang="x-default" rel="alternate" />
+		<script is:inline define:vars={{ defaultLang }}>
+			let lang = null;
+			try {
+				lang = localStorage.getItem("ui-lang");
+			} catch {}
+			if (lang !== "fr" && lang !== "en") {
+				const nav = (navigator.language || "").toLowerCase();
+				lang = nav.startsWith("fr") ? "fr" : nav.startsWith("en") ? "en" : defaultLang;
+			}
+			location.replace(`/${lang}/`);
+		</script>
+		<noscript><meta content={`0; url=${fallback}`} http-equiv="refresh" /></noscript>
+	</head>
+	<body>
+		<p><a href="/fr/" hreflang="fr" lang="fr">Français</a> · <a href="/en/" hreflang="en" lang="en">English</a></p>
+	</body>
+</html>

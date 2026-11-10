@@ -1,0 +1,27 @@
+---
+import type { HTMLAttributes } from "astro/types";
+import { dateLocales, languages } from "@/i18n";
+import { getFormattedDate } from "@/utils/date";
+
+type Props = HTMLAttributes<"time"> & {
+	date: Date;
+	dateTimeOptions?: Intl.DateTimeFormatOptions;
+};
+
+const { date, dateTimeOptions, ...attrs } = Astro.props;
+
+const ISO = date.toISOString();
+const uiLang = Astro.locals.uiLang;
+---
+
+<time datetime={ISO} title={ISO} {...attrs}
+	>{
+		uiLang
+			? getFormattedDate(date, dateTimeOptions, dateLocales[uiLang])
+			: languages.map((lang) => (
+			<span class="i18n" data-lang={lang} lang={lang}>
+				{getFormattedDate(date, dateTimeOptions, dateLocales[lang])}
+			</span>
+		))
+	}</time
+>

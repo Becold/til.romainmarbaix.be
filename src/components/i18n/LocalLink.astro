@@ -1,0 +1,31 @@
+---
+/**
+ * Link to a site page in the reader's UI language.
+ * `href` is the French path ("/tags/git/"); the English one gets the /en prefix.
+ * On pages without a fixed UI language, renders one link per language (CSS shows one).
+ */
+import type { HTMLAttributes } from "astro/types";
+import { languages, localizePath } from "@/i18n";
+
+type Props = HTMLAttributes<"a"> & { href: string };
+
+const { href, class: className, ...attrs } = Astro.props;
+const uiLang = Astro.locals.uiLang;
+const content = await Astro.slots.render("default");
+---
+
+{
+	uiLang ? (
+		<a class={className} href={localizePath(href, uiLang)} {...attrs} set:html={content} />
+	) : (
+		languages.map((lang) => (
+			<a
+				class:list={[className, "i18n"]}
+				data-lang={lang}
+				href={localizePath(href, lang)}
+				{...attrs}
+				set:html={content}
+			/>
+		))
+	)
+}

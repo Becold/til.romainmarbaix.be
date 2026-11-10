@@ -1,0 +1,50 @@
+---
+import { defaultLang } from "@/i18n";
+---
+
+{/* Inlined to avoid a flash of the wrong language. Parser blocking, like ThemeProvider. */}
+<script is:inline define:vars={{ defaultLang }}>
+	function getUiLang() {
+		const root = document.documentElement;
+		// page at / or /en/: its URL decides, and becomes the reader's choice
+		if (root.hasAttribute("data-ui-fixed")) return root.getAttribute("data-ui-lang") || defaultLang;
+		let stored = null;
+		try {
+			stored = localStorage.getItem("ui-lang");
+		} catch {}
+		if (stored === "fr" || stored === "en") return stored;
+		// no choice yet: keep the language the page was rendered in
+		const pageLang = document.documentElement.getAttribute("data-ui-lang");
+		if (pageLang === "fr" || pageLang === "en") return pageLang;
+		const nav = (navigator.language || "").toLowerCase();
+		if (nav.startsWith("fr")) return "fr";
+		if (nav.startsWith("en")) return "en";
+		return defaultLang;
+	}
+
+	function setUiLang(lang) {
+		const root = document.documentElement;
+		root.setAttribute("data-ui-lang", lang);
+		// <html lang> stays the language of the page content (SEO, screen readers).
+		const title = root.getAttribute(`data-title-${lang}`);
+		if (title) {
+			if (document.readyState === "loading") {
+				document.addEventListener("DOMContentLoaded", () => (document.title = title), { once: true });
+			} else {
+				document.title = title;
+			}
+		}
+		try {
+			localStorage.setItem("ui-lang", lang);
+		} catch {}
+	}
+
+	setUiLang(getUiLang());
+
+	window.addEventListener("pageshow", (e) => {
+		if (e.persisted) setUiLang(getUiLang());
+	});
+
+	// fired by src/components/i18n/LangToggle.astro
+	document.addEventListener("ui-lang-change", (e) => setUiLang(e.detail.lang));
+</script>

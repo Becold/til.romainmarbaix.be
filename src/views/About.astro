@@ -1,0 +1,48 @@
+---
+import type { Lang } from "@/i18n";
+import T from "@/components/i18n/T.astro";
+import PageLayout from "@/layouts/Base.astro";
+
+interface Props {
+	lang: Lang;
+}
+
+const { lang } = Astro.props;
+// Monolingual page: <T>, dates and links render only in this language (see src/i18n.ts)
+Astro.locals.uiLang = lang;
+
+const meta = {
+	lang,
+	description: { fr: "À propos de ce TIL", en: "About this TIL" },
+	title: { fr: "À propos", en: "About" },
+};
+---
+
+<PageLayout meta={meta}>
+	<h1 class="title mb-12"><T fr="À propos" en="About" /></h1>
+	<div class="prose prose-sm prose-cactus max-w-none">
+		<p>
+			<T
+				fr="Ce site est mon « Today I Learned » : un carnet public des astuces de développement que j'apprends au quotidien. Je les note surtout pour moi, pour les retrouver quand je les oublie."
+				en="This site is my “Today I Learned”: a public notebook of the development tips I pick up day to day. I write them down mostly for myself, to find them again when I forget."
+			/>
+		</p>
+		<p>
+			<T
+				fr="Les articles sont écrits en français ou en anglais. Le bouton FR / EN change la langue de l'interface, pas celle des articles."
+				en="Posts are written in French or English. The FR / EN button changes the interface language, not the language of the posts."
+			/>
+		</p>
+		<p>
+			<T fr="Construit avec" en="Built with" />
+			<a class="cactus-link" href="https://astro.build" rel="noreferrer" target="_blank">Astro</a>
+			<T fr="et le thème" en="and the" />
+			<a
+				class="cactus-link"
+				href="https://github.com/chrismwilliams/astro-theme-cactus"
+				rel="noreferrer"
+				target="_blank">Astro Cactus</a
+			><T fr="." en=" theme." />
+		</p>
+	</div>
+</PageLayout>

@@ -1,0 +1,57 @@
+---
+/**
+ * FR / EN switch.
+ * - Monolingual page: a link to the same page in the other language (/... <-> /en/...).
+ * - Other pages (posts, notes): a button that switches the UI language client side.
+ * Both remember the choice (see LangProvider).
+ */
+import { alternatePaths, type Lang } from "@/i18n";
+import T from "./T.astro";
+
+const uiLang = Astro.locals.uiLang;
+const other: Lang | undefined = uiLang ? (uiLang === "fr" ? "en" : "fr") : undefined;
+const href = other ? alternatePaths(Astro.url.pathname)[other] : undefined;
+const classes = "hover:text-accent relative inline-flex h-9 cursor-pointer items-center px-2 font-semibold";
+---
+
+<lang-toggle class="ms-2 sm:ms-4">
+	{
+		other ? (
+			<a class={classes} href={href} hreflang={other} lang={other} data-set-lang={other}>
+				<span class="sr-only">{other === "en" ? "Switch to English" : "Passer en français"}</span>
+				<span aria-hidden="true">{other.toUpperCase()}</span>
+			</a>
+		) : (
+			<button class={classes} type="button">
+				<span class="sr-only">
+					<T fr="Switch to English" en="Passer en français" />
+				</span>
+				<span aria-hidden="true">
+					<T fr="EN" en="FR" />
+				</span>
+			</button>
+		)
+	}
+</lang-toggle>
+
+<script>
+	class LangToggle extends HTMLElement {
+		connectedCallback() {
+			// link: store the choice, then let the browser navigate
+			this.querySelector<HTMLAnchorElement>("a[data-set-lang]")?.addEventListener("click", (e) => {
+				const lang = (e.currentTarget as HTMLAnchorElement).dataset.setLang;
+				try {
+					if (lang) localStorage.setItem("ui-lang", lang);
+				} catch {}
+			});
+			// button: switch the UI language in place
+			this.querySelector("button")?.addEventListener("click", () => {
+				const current = document.documentElement.getAttribute("data-ui-lang");
+				const lang = current === "en" ? "fr" : "en";
+				document.dispatchEvent(new CustomEvent("ui-lang-change", { detail: { lang } }));
+			});
+		}
+	}
+
+	customElements.define("lang-toggle", LangToggle);
+</script>

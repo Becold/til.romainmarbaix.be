@@ -1,0 +1,74 @@
+---
+import { type Lang, localizePath } from "@/i18n";
+import { type CollectionEntry, render } from "astro:content";
+import type { Page } from "astro";
+import { Icon } from "astro-icon/components";
+import PostPreview from "@/components/blog/PostPreview.astro";
+import LangFilter from "@/components/i18n/LangFilter.astro";
+import T from "@/components/i18n/T.astro";
+import Pagination from "@/components/Paginator.astro";
+import { getTagMeta } from "@/data/post";
+import PageLayout from "@/layouts/Base.astro";
+
+interface Props {
+	lang: Lang;
+	page: Page<CollectionEntry<"post">>;
+}
+
+const { lang, page } = Astro.props;
+// Monolingual page: <T>, dates and links render only in this language (see src/i18n.ts)
+Astro.locals.uiLang = lang;
+const tag = Astro.params.tag as string;
+const tagMeta = await getTagMeta(tag);
+
+const TagContent = tagMeta ? (await render(tagMeta)).Content : null;
+
+const meta = {
+	lang,
+	description: tagMeta?.data.description ?? { fr: `Tous les TIL avec le tag ${tag}`, en: `All TIL posts tagged ${tag}` },
+	title: tagMeta?.data.title ?? `#${tag}`,
+};
+
+const paginationProps = {
+	...(page.url.prev && {
+		prevUrl: {
+			text: { fr: "← Page précédente", en: "← Previous page" },
+			url: page.url.prev,
+		},
+	}),
+	...(page.url.next && {
+		nextUrl: {
+			text: { fr: "Page suivante →", en: "Next page →" },
+			url: page.url.next,
+		},
+	}),
+};
+---
+
+<PageLayout meta={meta}>
+	<nav class="mb-8" aria-label="Breadcrumb">
+		<ul class="flex items-center">
+			<li class="flex items-center">
+				<a class="text-accent" href={localizePath("/tags/", lang)}>Tags</a>
+				<Icon aria-hidden="true" name="mdi:chevron-right" class="mx-1.5" />
+			</li>
+			<li aria-current="page" class=""><span aria-hidden="true">#</span>{tag}</li>
+		</ul>
+	</nav>
+	<h1 class="title">{tagMeta?.data.title ?? <T fr={`Articles sur ${tag}`} en={`Posts about ${tag}`} />}</h1>
+	<div class="prose prose-sm prose-cactus mb-16 max-w-none">
+		{tagMeta?.data.description && <p>{tagMeta.data.description}</p>}
+		{TagContent && <TagContent />}
+	</div>
+	<LangFilter />
+	<ul class="space-y-4">
+		{
+			page.data.map((p) => (
+				<li class="grid gap-1 sm:grid-cols-[auto_1fr]">
+					<PostPreview as="h2" post={p} />
+				</li>
+			))
+		}
+	</ul>
+	<Pagination {...paginationProps} />
+</PageLayout>

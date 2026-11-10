@@ -1,0 +1,17 @@
+---
+import T from "@/components/i18n/T.astro";
+import PageLayout from "@/layouts/Base.astro";
+
+const meta = {
+	description: { fr: "Page introuvable", en: "Page not found" },
+	noindex: true,
+	title: { fr: "Page introuvable", en: "Page not found" },
+};
+---
+
+<PageLayout meta={meta}>
+	<h1 class="title mb-12">404 | <T fr="Page introuvable" en="Page not found" /></h1>
+	<p class="mb-8">
+		<T fr="Utilise le menu pour retrouver ton chemin." en="Use the navigation to find your way back." />
+	</p>
+</PageLayout>

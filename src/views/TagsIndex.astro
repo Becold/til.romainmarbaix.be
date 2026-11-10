@@ -1,0 +1,44 @@
+---
+import { type Lang, localizePath } from "@/i18n";
+import { getAllPosts, getUniqueTagsWithCount } from "@/data/post";
+import T from "@/components/i18n/T.astro";
+import PageLayout from "@/layouts/Base.astro";
+
+interface Props {
+	lang: Lang;
+}
+
+const { lang } = Astro.props;
+// Monolingual page: <T>, dates and links render only in this language (see src/i18n.ts)
+Astro.locals.uiLang = lang;
+
+const allPosts = await getAllPosts();
+const allTags = getUniqueTagsWithCount(allPosts);
+
+const meta = {
+	lang,
+	description: { fr: "Tous les sujets abordés dans mes TIL", en: "All the topics of my TIL posts" },
+	title: "Tags",
+};
+---
+
+<PageLayout meta={meta}>
+	<h1 class="title mb-6">Tags</h1>
+	<ul class="space-y-4">
+		{
+			allTags.map(([tag, val]) => (
+				<li class="flex items-center gap-x-2">
+					<a
+						class="cactus-link inline-block"
+						href={localizePath(`/tags/${tag}/`, lang)}
+					>
+						&#35;{tag}
+					</a>
+					<span class="inline-block">
+						- {val} <T fr={val > 1 ? "articles" : "article"} en={val > 1 ? "posts" : "post"} />
+					</span>
+				</li>
+			))
+		}
+	</ul>
+</PageLayout>

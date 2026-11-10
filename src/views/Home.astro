@@ -1,0 +1,102 @@
+---
+import { type Lang, localizePath } from "@/i18n";
+import { type CollectionEntry, getCollection } from "astro:content";
+import PostPreview from "@/components/blog/PostPreview.astro";
+import T from "@/components/i18n/T.astro";
+import Note from "@/components/note/Note.astro";
+import { getAllPosts } from "@/data/post";
+import PageLayout from "@/layouts/Base.astro";
+import { collectionDateSort } from "@/utils/date";
+
+interface Props {
+	lang: Lang;
+}
+
+const { lang } = Astro.props;
+// Monolingual page: <T>, dates and links render only in this language (see src/i18n.ts)
+Astro.locals.uiLang = lang;
+
+// Posts
+const MAX_POSTS = 10;
+const allPosts = await getAllPosts();
+const allPostsByDate = allPosts.sort(collectionDateSort) as CollectionEntry<"post">[];
+const latestPosts = allPostsByDate.slice(0, MAX_POSTS);
+
+// Pinned Posts, set to a max of 3;
+const MAX_PINNED_POSTS = 3;
+const pinnedPosts = allPostsByDate
+	.values()
+	.filter((p) => p.data.pinned)
+	.take(MAX_PINNED_POSTS)
+	.toArray();
+
+// Notes, set to a max of 5
+const MAX_NOTES = 5;
+const allNotes = await getCollection("note");
+const latestNotes = allNotes
+	.sort(collectionDateSort)
+	.slice(0, MAX_NOTES) as CollectionEntry<"note">[];
+---
+
+<PageLayout
+	meta={{
+		lang,
+		title: { fr: "Accueil", en: "Home" },
+		description: {
+			fr: "Today I Learned : les astuces de dev que je ne veux pas oublier.",
+			en: "Today I Learned: the dev tips I don't want to forget.",
+		},
+	}}
+>
+	<section>
+		<h1 class="title mb-12">Today I Learned</h1>
+		<p class="mb-4">
+			<T
+				fr="Des astuces de dev apprises au jour le jour, notées ici pour ne pas les oublier. Une astuce par article, courte, avec un exemple."
+				en="Dev tips I learn day to day, written down so I don't forget them. One tip per post, short, with an example."
+			/>
+		</p>
+	</section>
+	{
+		pinnedPosts.length > 0 && (
+			<section class="mt-16">
+				<h2 class="title mb-6 text-xl"><T fr="Épinglés" en="Pinned" /></h2>
+				<ul class="space-y-4" role="list">
+					{pinnedPosts.map((p) => (
+						<li class="grid gap-1 sm:grid-cols-[auto_1fr]">
+							<PostPreview post={p} />
+						</li>
+					))}
+				</ul>
+			</section>
+		)
+	}
+	<section class="mt-16">
+		<h2 class="title text-accent mb-6 text-xl"><a href={localizePath("/posts/", lang)}><T fr="Derniers TIL" en="Latest TIL" /></a></h2>
+		<ul class="space-y-4" role="list">
+			{
+				latestPosts.map((p) => (
+					<li class="grid gap-1 sm:grid-cols-[auto_1fr]">
+						<PostPreview post={p} />
+					</li>
+				))
+			}
+		</ul>
+	</section>
+	{
+		latestNotes.length > 0 && (
+			<section class="mt-16">
+				<h2 class="title text-accent mb-6 text-xl">
+					<a href={localizePath("/notes/", lang)}>Notes</a>
+				</h2>
+				<ul class="space-y-6" role="list">
+					{latestNotes.map((note) => (
+						<li>
+							<Note note={note} as="h3" isPreview />
+						</li>
+					))}
+				</ul>
+			</section>
+		)
+	}
+</PageLayout>

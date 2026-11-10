@@ -1,0 +1,29 @@
+---
+import { getCollection } from "astro:content";
+import type { GetStaticPaths, InferGetStaticPropsType } from "astro";
+import Note from "@/components/note/Note.astro";
+import PageLayout from "@/layouts/Base.astro";
+
+// notes written in this language only
+export const getStaticPaths = (async () => {
+	const notes = await getCollection("note", ({ data }) => data.lang === "fr");
+	return notes.map((note) => ({
+		params: { slug: note.id },
+		props: { note },
+	}));
+}) satisfies GetStaticPaths;
+
+type Props = InferGetStaticPropsType<typeof getStaticPaths>;
+
+const { note } = Astro.props;
+
+const meta = {
+	description: note.data.description || note.data.title,
+	lang: note.data.lang,
+	title: note.data.title,
+};
+---
+
+<PageLayout meta={meta}>
+	<Note as="h1" note={note} />
+</PageLayout>

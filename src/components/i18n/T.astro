@@ -1,0 +1,24 @@
+---
+/**
+ * Renders a UI string.
+ * - Monolingual page (Astro.locals.uiLang set): only that language.
+ * - Otherwise: every language, CSS shows the one in <html data-ui-lang> (set by LangProvider).
+ */
+import { languages, type Localized } from "@/i18n";
+
+type Props = Partial<Localized> & { text?: Localized };
+
+const { text, ...rest } = Astro.props;
+const values = { ...text, ...rest } as Localized;
+const uiLang = Astro.locals.uiLang;
+---
+
+{
+	uiLang
+		? values[uiLang]
+		: languages.map((lang) => (
+				<span class="i18n" data-lang={lang} lang={lang}>
+					{values[lang]}
+				</span>
+			))
+}

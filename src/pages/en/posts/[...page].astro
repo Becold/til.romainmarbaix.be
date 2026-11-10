@@ -1,0 +1,11 @@
+---
+import PostsList from "@/views/PostsList.astro";
+import { postsPaths } from "@/views/paths";
+
+export const getStaticPaths = postsPaths;
+
+// biome-ignore lint/suspicious/noExplicitAny: props come from the shared getStaticPaths
+const props = Astro.props as any;
+---
+
+<PostsList lang="en" {...props} />
